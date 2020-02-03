@@ -124,6 +124,55 @@ Users with sudo permissions to amor amor hosts would be added to the ``amor-sudo
      User Groups: amor-sudo  # see: `ipa group-show amor-sudo`
      Host Groups: amor       # see: `ipa hostgroup-show amor`
 
+Example: Creating a new hostgroup and associated rules
+------------------------------------------------------
+
+**Create a user group that can SSH to HVAC servers**
+
+::
+   $ ipa group-add hvac --desc "Summit HVAC users"
+   ------------------
+   Added group "hvac"
+   ------------------
+     Group name: hvac
+     GID: 73027
+
+**Create a hostgroup to contain all HVAC servers**
+::
+   $ ipa hostgroup-add hvac --desc "Summit HVAC servers"
+   ----------------------
+   Added hostgroup "hvac"
+   ----------------------
+     Host-group: hvac
+     Description: Summit HVAC servers
+
+**Allow users in the hvac group to access servers in the hvac hostgroup**
+::
+   $ ipa hbacrule-add hvac-users
+   ----------------------------
+   Added HBAC rule "hvac-users"
+   ----------------------------
+     Rule name: hvac-users
+     Enabled: TRUE
+
+   $ ipa hbacrule-add-host hvac-users --hostgroups=hvac
+     Rule name: hvac-users
+     Enabled: TRUE
+     Host Groups: hvac
+   -------------------------
+   Number of members added 1
+   -------------------------
+
+   $ ipa hbacrule-add-user hvac-users --groups=hvac
+     Rule name: hvac-users
+     Enabled: TRUE
+     User Groups: hvac
+     Host Groups: hvac
+   -------------------------
+   Number of members added 1
+   -------------------------
+
+
 IPA Directory RBAC
 ==================
 
