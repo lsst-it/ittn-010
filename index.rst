@@ -148,15 +148,17 @@ Example: Creating a new hostgroup and associated rules
 
 **Allow users in the hvac group to access servers in the hvac hostgroup**
 ::
-   $ ipa hbacrule-add hvac-users
+   $ ipa hbacrule-add hvac-users --servicecat=all
    ----------------------------
    Added HBAC rule "hvac-users"
    ----------------------------
      Rule name: hvac-users
+     Service category: all
      Enabled: TRUE
 
    $ ipa hbacrule-add-host hvac-users --hostgroups=hvac
      Rule name: hvac-users
+     Service category: all
      Enabled: TRUE
      Host Groups: hvac
    -------------------------
@@ -165,6 +167,7 @@ Example: Creating a new hostgroup and associated rules
 
    $ ipa hbacrule-add-user hvac-users --groups=hvac
      Rule name: hvac-users
+     Service category: all
      Enabled: TRUE
      User Groups: hvac
      Host Groups: hvac
