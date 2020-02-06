@@ -4,13 +4,7 @@
 
 .. sectnum::
 
-.. TODO: Delete the note below before merging new content to the master branch.
-
-.. note::
-
-   **This technote is not yet published.**
-
-   This tech note describes user identification and authorization.
+**ITTN Category: Informational**
 
 IPA Server Topology
 ===================
