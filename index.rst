@@ -43,6 +43,16 @@ sudo rule that grants full sudo access.
 - HBAC rule: ``<cluster>-users``
 - Sudo rule: ``<cluster>-sudo``
 
+.. note::
+
+   Our current convention is that user groups and hostgroups are always
+   singular. Sudo rules are always ``<cluster>-sudo`` and HBAC rules are always
+   ``<cluster>-users``.
+
+   This decision is subject to revision in the future, but until that point
+   we'll stick to this convention to avoid small errors due to inconsistent
+   pluralization.
+
 Example: amor cluster
 ---------------------
 
