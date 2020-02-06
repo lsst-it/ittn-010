@@ -76,29 +76,34 @@ generally done through SSH) and full sudo permissions.
 
 - Unix user group for host access (HBAC): ``<cluster>``
 - Unix user group for sudo access: ``<cluster>-sudo``
-- LDAP host group: ``<cluster>``
+- IPA host group: ``<cluster>``
+
+Two access rules are used: an HBAC rule that grants access to the host, and a
+sudo rule that grants full sudo access.
+
+- HBAC rule: ``<cluster>-users``
+- Sudo rule: ``<cluster>-sudo``
 
 Example: amor cluster
 ---------------------
 
 A group named amor would be configured as follows:
 
-- IPA hostgroup: ``amor``
-  - Host: ``amor01.cp.lsst.org``
-  - Host: ``amor02.cp.lsst.org``
-- IPA user group (for host access): ``amor``
-  - Users in ``amor`` can SSH to the amor nodes
-- IPA user group (for sudo access): ``amor-sudo``
-  - Users in ``amor`` can SSH to the amor nodes
-- IPA HBAC rule: ``amor-users``
-  - The ``amor-users`` HBAC rule grants SSH access for ``amor`` user group to the ``amor`` host group.
-- IPA Sudo rule: ``amor-sudo``
+- Unix user group for host access (HBAC): ``amor``
+- Unix user group for sudo access: ``amor-sudo``
+- IPA host group: ``amor``
+
+The access rules are as follows:
+
+- HBAC rule: ``amor-users``
+- Sudo rule: ``amor-sudo``
 
 Users with access to amor hosts would be added to the ``amor`` unix group.
 
 Users with sudo permissions to amor amor hosts would be added to the ``amor-sudo`` unix group.
 
-::
+.. code-block:: console
+
    $ ipa hostgroup-show amor
      Host-group: amor
      Description: amor nodes
@@ -106,7 +111,8 @@ Users with sudo permissions to amor amor hosts would be added to the ``amor-sudo
      Member of Sudo rule: amor-sudo    # see: `ipa sudorule-show amor-sudo`
      Member of HBAC rule: amor-users   # see: `ipa hbacrule-show amor-users`
 
-::
+.. code-block:: console
+
    $ ipa hbacrule-show amor-users
      Rule name: amor-users
      Service category: all
@@ -114,7 +120,8 @@ Users with sudo permissions to amor amor hosts would be added to the ``amor-sudo
      User Groups: amor   # see: `ipa group-show amor`
      Host Groups: amor   # see: `ipa hostgroup-show amor`
 
-::
+.. code-block:: console
+
    $ ipa sudorule-show amor-sudo
      Rule name: amor-sudo
      Enabled: TRUE
@@ -124,21 +131,45 @@ Users with sudo permissions to amor amor hosts would be added to the ``amor-sudo
      User Groups: amor-sudo  # see: `ipa group-show amor-sudo`
      Host Groups: amor       # see: `ipa hostgroup-show amor`
 
-Example: Creating a new hostgroup and associated rules
+Example: Creating an ``hvac`` hostgroup and user group
 ------------------------------------------------------
 
-**Create a user group that can SSH to HVAC servers**
+In this example we create the following resources:
 
-::
+1. :ref:`**hvac** unix user group <create-hvac-group>` for host access (HBAC)
+2. :ref:`**hvac-sudo** unix user group <create-hvac-sudo-group>` for sudo access
+3. :ref:`**hvac** IPA host group <create-hvac-hostgroup>`
+4. :ref:`**hvac-users** HBAC rule <create-hvac-users-hbacrule>`
+5. :ref:`**hvac-sudo** Sudo rule <create-hvac-sudo-sudorule>`
+
+User group creation
+^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+   :name: create-hvac-group
+
    $ ipa group-add hvac --desc "Summit HVAC users"
    ------------------
    Added group "hvac"
    ------------------
      Group name: hvac
+     Description: Summit HVAC users
      GID: 73027
 
-**Create a hostgroup to contain all HVAC servers**
-::
+.. code-block:: console
+   :name: create-hvac-sudo-group
+
+   $ ipa group-add hvac-sudo --desc "Summit HVAC sudo users"
+   ------------------
+   Added group "hvac-sudo"
+   ------------------
+     Group name: hvac-sudo
+     Description: Summit HVAC sudo users
+     GID: 73034
+
+.. code-block:: console
+   :name: create-hvac-hostgroup
+
    $ ipa hostgroup-add hvac --desc "Summit HVAC servers"
    ----------------------
    Added hostgroup "hvac"
@@ -146,8 +177,10 @@ Example: Creating a new hostgroup and associated rules
      Host-group: hvac
      Description: Summit HVAC servers
 
-**Allow users in the hvac group to access servers in the hvac hostgroup**
-::
+.. code-block:: console
+   :name: create-hvac-users-hbacrule
+   :emphasize-lines: 1,8,16
+
    $ ipa hbacrule-add hvac-users --servicecat=all
    ----------------------------
    Added HBAC rule "hvac-users"
@@ -155,7 +188,6 @@ Example: Creating a new hostgroup and associated rules
      Rule name: hvac-users
      Service category: all
      Enabled: TRUE
-
    $ ipa hbacrule-add-host hvac-users --hostgroups=hvac
      Rule name: hvac-users
      Service category: all
@@ -164,7 +196,6 @@ Example: Creating a new hostgroup and associated rules
    -------------------------
    Number of members added 1
    -------------------------
-
    $ ipa hbacrule-add-user hvac-users --groups=hvac
      Rule name: hvac-users
      Service category: all
@@ -175,6 +206,40 @@ Example: Creating a new hostgroup and associated rules
    Number of members added 1
    -------------------------
 
+.. code-block:: console
+   :name: create-hvac-users-sudorule
+   :emphasize-lines: 1,10,20
+
+   $ ipa sudorule-add hvac-sudo --cmdcat=all --runasusercat=all --runasgroupcat=all
+   ---------------------------
+   Added Sudo Rule "hvac-sudo"
+   ---------------------------
+     Rule name: hvac-sudo
+     Enabled: TRUE
+     Command category: all
+     RunAs User category: all
+     RunAs Group category: all
+   $ ipa sudorule-add-user hvac-sudo --groups=hvac-sudo
+     Rule name: hvac-sudo
+     Enabled: TRUE
+     Command category: all
+     RunAs User category: all
+     RunAs Group category: all
+     User Groups: hvac-sudo
+   -------------------------
+   Number of members added 1
+   -------------------------
+   $ ipa sudorule-add-host hvac-sudo --hostgroups=hvac
+     Rule name: hvac-sudo
+     Enabled: TRUE
+     Command category: all
+     RunAs User category: all
+     RunAs Group category: all
+     User Groups: hvac-sudo
+     Host Groups: hvac
+   -------------------------
+   Number of members added 1
+   -------------------------
 
 IPA Directory RBAC
 ==================
