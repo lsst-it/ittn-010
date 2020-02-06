@@ -49,9 +49,10 @@ sudo rule that grants full sudo access.
    singular. Sudo rules are always ``<cluster>-sudo`` and HBAC rules are always
    ``<cluster>-users``.
 
-   This decision is subject to revision in the future, but until that point
-   we'll stick to this convention to avoid small errors due to inconsistent
-   pluralization.
+   This convention is not necessarily ideal and is subject to revision, but
+   right now this is the pattern that we're following. We benefit from having a
+   consistent pattern that avoids transcription and consistency errors. In the
+   future we can (and probably should) revise this in the future.
 
 Example: amor cluster
 ---------------------
