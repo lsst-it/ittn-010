@@ -106,17 +106,18 @@ Example: Creating an ``hvac`` hostgroup and user group
 
 In this example we create the following resources:
 
-1. :ref:`**hvac** unix user group <create-hvac-group>` for host access (HBAC)
-2. :ref:`**hvac-sudo** unix user group <create-hvac-sudo-group>` for sudo access
-3. :ref:`**hvac** IPA host group <create-hvac-hostgroup>`
-4. :ref:`**hvac-users** HBAC rule <create-hvac-users-hbacrule>`
-5. :ref:`**hvac-sudo** Sudo rule <create-hvac-sudo-sudorule>`
+1. :ref:`hvac unix user group <create-hvac-group>` for host access (HBAC)
+2. :ref:`hvac-sudo unix user group <create-hvac-sudo-group>` for sudo access
+3. :ref:`hvac IPA host group <create-hvac-hostgroup>`
+4. :ref:`hvac-users HBAC rule <create-hvac-users-hbacrule>`
+5. :ref:`hvac-sudo Sudo rule <create-hvac-sudo-sudorule>`
 
 User group creation
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
    :name: create-hvac-group
+   :emphasize-lines: 1
 
    $ ipa group-add hvac --desc "Summit HVAC users"
    ------------------
@@ -128,6 +129,7 @@ User group creation
 
 .. code-block:: console
    :name: create-hvac-sudo-group
+   :emphasize-lines: 1
 
    $ ipa group-add hvac-sudo --desc "Summit HVAC sudo users"
    ------------------
@@ -139,6 +141,7 @@ User group creation
 
 .. code-block:: console
    :name: create-hvac-hostgroup
+   :emphasize-lines: 1
 
    $ ipa hostgroup-add hvac --desc "Summit HVAC servers"
    ----------------------
@@ -177,7 +180,7 @@ User group creation
    -------------------------
 
 .. code-block:: console
-   :name: create-hvac-users-sudorule
+   :name: create-hvac-sudo-sudorule
    :emphasize-lines: 1,10,20
 
    $ ipa sudorule-add hvac-sudo --cmdcat=all --runasusercat=all --runasgroupcat=all
