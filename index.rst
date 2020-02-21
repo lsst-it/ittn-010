@@ -17,12 +17,41 @@ be made at Cerro Pachon when the link to La Serena has been severed.
 Two IPA servers (``ipa1.<site>.<domain>`` and ``ipa2.<site>.<domain>``) are
 deployed at each site, providing quick LDAP lookups and redundancy.
 
-Unix HBAC and Sudo
-==================
+Group membership and access grants
+==================================
 
 Host access and sudo permissions are applied to groups of hosts (hostgroups),
 and groups of users (user groups/unix groups). Access is always provided by
 assigning users to user groups, and hosts to host-groups.
+
+Hostgroup membership
+--------------------
+
+Hosts must always be added to a hostgroup via an automember rule. Hostgroups
+that have an automember rule will evict any hosts from the group that don't
+match the regex, so automember rules are all or nothing.
+
+.. code-block:: console
+
+   $ ipa automember-add-condition auxtel \
+      --type=hostgroup --key=fqdn \
+      --inclusive-regex='^ts-csc-generic-01\.cp\.lsst\.org$'
+   ------------------------------
+   Added condition(s) to "auxtel"
+   ------------------------------
+     Automember Rule: auxtel
+     Inclusive Regex: fqdn=^at-.*, fqdn=^atarchiver.*, fqdn=^ats-.*, fqdn=^atsccs.*, fqdn=^atsdaq.*,
+                      fqdn=^atshcu.*, fqdn=^auxtel-control-01.*, fqdn=^ts-csc-generic-01\.cp\.lsst\.org$
+   ----------------------------
+   Number of conditions added 1
+   ----------------------------
+   $ ipa automember-rebuild --type=hostgroup
+   ---------------------------------------------------------
+   Automember rebuild task finished. Processed (87) entries.
+   ---------------------------------------------------------
+
+HBAC and sudo
+-------------
 
 Two levels of access are provided: basic login access to the host (which is
 generally done through SSH) and full sudo permissions.
