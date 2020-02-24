@@ -31,6 +31,41 @@ Hosts must always be added to a hostgroup via an automember rule. Hostgroups
 that have an automember rule will evict any hosts from the group that don't
 match the regex, so automember rules are all or nothing.
 
+Example: creating a new automember rule and adding hosts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+   emphasize-lines: 1,6,15,19
+
+   $ ipa automember-add --type=hostgroup hvac
+   ----------------------------
+   Added automember rule "hvac"
+   ----------------------------
+     Automember Rule: hvac
+   $ ipa automember-add-condition hvac --type=hostgroup --key=fqdn --inclusive-regex='^eas-hvac.*$'
+   ----------------------------
+   Added condition(s) to "hvac"
+   ----------------------------
+     Automember Rule: hvac
+     Inclusive Regex: fqdn=^eas-hvac.*$
+   ----------------------------
+   Number of conditions added 1
+   ----------------------------
+   $ ipa automember-rebuild --type=hostgroup
+   ---------------------------------------------------------
+   Automember rebuild task finished. Processed (90) entries.
+   ---------------------------------------------------------
+   $ ipa hostgroup-show hvac
+     Host-group: hvac
+     Description: Summit HVAC servers
+     Member hosts: eas-hvac01.cp.lsst.org
+     Member of Sudo rule: hvac-sudo
+     Member of HBAC rule: hvac-users
+
+
+Example: adding a host to an existing automember rule
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. code-block:: console
 
    $ ipa automember-add-condition auxtel \
