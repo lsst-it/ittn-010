@@ -24,6 +24,29 @@ Host access and sudo permissions are applied to groups of hosts (hostgroups),
 and groups of users (user groups/unix groups). Access is always provided by
 assigning users to user groups, and hosts to host-groups.
 
+Group membership
+----------------
+
+Access control can be delegated to users by granting them permissions to manage
+memberships for groups.
+
+Example: adding a user to a group
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+   [athebo@ipa1 ~]$ kinit
+   Password for athebo@LSST.CLOUD:
+   [athebo@ipa1 ~]$ ipa group-add-member vpn-cl --users=athebo
+     Group name: vpn-cl
+     GID: 70025
+     Member users: jhoblitt-vpn, afausti, mgower, mxk, srp, daues, hwin16, felipe, wglick, tonyj, turri,
+                   onoprien, jorellana, gcorvetto, rtighe, athebo
+     Member groups: tssw-core-dev
+     Indirect Member users: rowen
+   -------------------------
+   Number of members added 1
+   -------------------------
+
 Hostgroup membership
 --------------------
 
