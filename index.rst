@@ -325,6 +325,33 @@ A fully expanded RBAC role looks roughly like the following:
             - Target DN: ``cn=vpn-cl,cn=groups,cn=accounts,dc=lsst,dc=cloud``
             - Target group: ``vpn-cl``
 
+Service accounts and bind DNs
+=============================
+
+Some services need to bind to the LDAP directory, and can't use a normal IPA
+user. Examples of this are applications like Foreman and Dex (and OIDC provider).
+
+.. code-block:: bash
+   #!/bin/bash
+   USER=foreman
+   PASSWORD="$(tr -cd '[:alnum:]' < /dev/urandom | head -c 16 | awk '{print toupper($0)}')"
+   cat <<EOF > binddn.update
+   dn: uid=foreman,cn=sysaccounts,cn=etc,dc=lsst,dc=cloud
+   add:objectclass:account
+   add:objectclass:simplesecurityobject
+   add:uid:foreman
+   add:userPassword:$PASSWORD
+   add:passwordExpirationTime:20380119031407Z
+   add:nsIdleTimeout:0
+   EOF
+
+   # This must be run on an IPA server
+   sudo ipa-ldap-updater binddn.update
+
+See also:
+
+- `Creating a bind DN for Foreman <https://www.freeipa.org/page/Creating_a_binddn_for_Foreman>`__
+
 .. .. rubric:: References
 
 .. Make in-text citations with: :cite:`bibkey`.
