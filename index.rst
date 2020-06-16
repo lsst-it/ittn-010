@@ -332,6 +332,7 @@ Some services need to bind to the LDAP directory, and can't use a normal IPA
 user. Examples of this are applications like Foreman and Dex (and OIDC provider).
 
 .. code-block:: bash
+
    #!/bin/bash
    USER=foreman
    PASSWORD="$(tr -cd '[:alnum:]' < /dev/urandom | head -c 16 | awk '{print toupper($0)}')"
