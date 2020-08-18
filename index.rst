@@ -353,6 +353,51 @@ See also:
 
 - `Creating a bind DN for Foreman <https://www.freeipa.org/page/Creating_a_binddn_for_Foreman>`__
 
+UID/GID Allocation
+==================
+
+On EL7 systems, the default ``/etc/login.defs`` has ``UID_MAX`` and ``GID_MAX``
+set to ``60000``. We prefer to avoiding having to manage IDs which potentially
+conflict between IPA/LDAP and system local accounts, as well as not interfering
+with the UID/GID sequence of locally created accounts.  While we could change
+the default values for these parameters, there would still be some risk of
+collision on hosts which are provisioned by a 3rd party prior to installation
+on our network(s).  Therefore we have adopted the policy that all centrally
+allocated UID/GIDs must be ``>= 60001``.
+
+ID Ranges
+---------
+
+These UID/GID ranges are reserved for specific use cases:
+
+* 61000-61999 is reserved for DM / "archive" related role accounts
+* 62000-62999 is reserved for Camera / CCS related role accounts
+* 70000-79999 is used for general users/groups in freeipa
+
+Resevered UIDs/GIDs
+-------------------
+
+This document shall be considered the canonical source for specific user/group
+reservations. UID/GID reservations should use the same ID to avoid confusion.
+E.g. A user/group named ``foo`` which use ``123456`` as both the UID and GID.
+
+If **only** a UID or GID is need, the corresponding UID or GID should still be
+"reserved" to avoid future confusion.
+
+======== ============
+UID/GID  username
+======== ============
+DM / "archive"
+---------------------
+61000    arc
+61001    (reserved/unused for archiver)
+61002    atadbot
+Camera / CCS
+---------------------
+62000    ccs
+62001    ccsadm
+======== ============
+
 .. .. rubric:: References
 
 .. Make in-text citations with: :cite:`bibkey`.
