@@ -295,6 +295,93 @@ User group creation
    Number of members added 1
    -------------------------
 
+Renaming a already enrolled host
+--------------------------------
+
+IMPORTANT: If the node is running puppet, you must stop puppet service in the host before this procedure, otherwise, puppet might attempt to reenroll it before you finish all tasks.
+
+The hostname of a system is critical for the correct operation of Kerberos and SSL. Both of these security 
+mechanisms rely on the hostname to ensure that communication is occurring between the specified hosts. 
+Renaming a host in a FreeIPA domain involves deleting the entry in FreeIPA, uninstalling the client software, 
+changing the hostname, and re-enrolling using the new name. Additionally, part of renaming hosts requires 
+regenerating service principals. 
+
+To reconfigure the client:
+
+1) Identify which services are running on the machine. These need to be re-created when the machine is re-enrolled.
+
+.. code-block:: bash
+
+  $ ipa service-find server.example.com
+   
+Each host has a default service which does not appear in the list of services. This service can be referred to 
+as the "host service". The service principal for the host service is host/<hostname>, such as host/server.example.com.
+This principal can also be referred to as the host principal.
+  
+2) Identify all host groups to which the machine belongs.
+
+.. code-block:: bash
+
+  $ ipa hostgroup-find server.example.com
+
+3) Identify which of the services have certificates associated with them. This can be done using the ldapsearch command to check the entries in the FreeIPA LDAP database directly:
+
+.. code-block:: bash
+
+  $ ldapsearch -x -b "cn=accounts,dc=example,dc=com" "(&(objectclass=ipaservice)(userCertificate=*))" krbPrincipalName
+
+For any service principals (in addition to the host principal), determine the location of the corresponding keytabs 
+on server.example.com. The keytab location is different for each service, and FreeIPA does not store this information. 
+Each service on the client system has a Kerberos principal in the form service name/hostname@REALM, such as ldap/server.example.com@EXAMPLE.COM.
+
+4) Unenroll the client machine from the FreeIPA domain:
+
+.. code-block:: bash
+
+  $ ipa-client-install --uninstall
+
+5) For each identified keytab other than /etc/krb5.keytab, remove the old principals:
+
+.. code-block:: bash
+
+  $ ipa-rmkeytab -k /path/to/keytab -r EXAMPLE.COM
+
+6) On another FreeIPA machine, as a FreeIPA administrator, remove the host entry. This removes all services and revokes all certificates issued for that host:
+
+.. code-block:: bash
+
+  $ ipa host-del server.example.com
+
+At this point, the host is completely removed from FreeIPA.
+
+7) Rename the machine. You can either rename the hostname file or use the command for it:
+
+.. code-block:: bash
+
+  $ hostnamectl set-hostname new-hostname.example.com
+
+  If the system is already managed by puppet, you can perform a puppet run at this point and IPA will be auto-configured.
+  If the system isn't managed by puppet, proceed to number 8 (otherwise the operation has concluded).
+
+8) Re-enroll the system with FreeIPA:
+
+.. code-block:: bash
+
+  $ ipa-client-install
+
+  This generates a host principal for with the new hostname in /etc/krb5.keytab.
+  For every service that needs a new keytab, run the following command:
+
+.. code-block:: bash
+
+  $ ipa service-add serviceName/new-hostname
+
+  To generate certificates for services, use either certmonger or the FreeIPA administration tools.
+  Re-add the host to any applicable host groups. 
+
+*Official Fedora Documentation Procedure for renaming a host. Information gathered from:
+https://docs.fedoraproject.org/en-US/Fedora/18/html/FreeIPA_Guide/renaming-machines.html
+
 IPA Directory RBAC
 ==================
 
