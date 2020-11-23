@@ -300,11 +300,9 @@ Renaming a already enrolled host
 
 IMPORTANT: If the node is running puppet, you must stop puppet service in the host before this procedure, otherwise, puppet might attempt to reenroll it before you finish all tasks.
 
-The hostname of a system is critical for the correct operation of Kerberos and SSL. Both of these security 
-mechanisms rely on the hostname to ensure that communication is occurring between the specified hosts. 
-Renaming a host in a FreeIPA domain involves deleting the entry in FreeIPA, uninstalling the client software, 
-changing the hostname, and re-enrolling using the new name. Additionally, part of renaming hosts requires 
-regenerating service principals. 
+The hostname of a system is critical for the correct operation of Kerberos and SSL. Both of these security mechanisms rely on the hostname to ensure that communication is occurring
+between the specified hosts. Renaming a host in a FreeIPA domain involves deleting the entry in FreeIPA, uninstalling the client software, changing the hostname, and re-enrolling 
+using the new name. Additionally, part of renaming hosts requires regenerating service principals. 
 
 To reconfigure the client:
 
@@ -381,6 +379,37 @@ At this point, the host is completely removed from FreeIPA.
 
 *Official Fedora Documentation Procedure for renaming a host. Information gathered from:
 https://docs.fedoraproject.org/en-US/Fedora/18/html/FreeIPA_Guide/renaming-machines.html
+
+
+
+Renaming an IdM Server or Replica
+---------------------------------
+
+IMPORTANT: If the node is running puppet, you must stop puppet service in the host before this procedure, otherwise, puppet might attempt to reenroll it before you finish all tasks.
+
+There is no way to change the hostname for an IdM server or replica machine. The Kerberos keys amd certificate management is too complex to allow the hostname to change.
+
+Rather, if a server or replica needs to be renamed, it is easier to replace the instance. 
+
+1) Create a new replica, with a CA, with the new hostname or IP address. This is described in https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/Setting_up_IPA_Replicas
+
+2) Stop the original IdM server instance:
+
+.. code-block:: bash
+
+  $ ipactl stop
+ 
+3) Verify that all other servers/replicas and clients are working as before.
+
+4) Uninstall the IdM server:
+
+.. code-block:: bash
+
+  $ ipa-server-install --uninstall
+
+*Official Fedora Documentation Procedure for renaming an IdM server. Information gathered from:
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/renaming-replica
+
 
 IPA Directory RBAC
 ==================
