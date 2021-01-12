@@ -508,6 +508,7 @@ DM / "archive"
 61000    arc
 61001    (reserved/unused for archiver)
 61002    atadbot
+61003    iip
 Camera / CCS
 ---------------------
 62000    ccs
