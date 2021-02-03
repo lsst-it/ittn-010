@@ -526,7 +526,7 @@ To solve uninstall the server from IPA, delete it from IPA reboot it, and let Pu
 
 .. code-block:: bash
 
-   >ipa-client-install --uninstall
+   $ ipa-client-install --uninstall
 
    #type yes to reboot the server
 
