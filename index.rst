@@ -301,8 +301,8 @@ Renaming a already enrolled host
 IMPORTANT: If the node is running puppet, you must stop puppet service in the host before this procedure, otherwise, puppet might attempt to reenroll it before you finish all tasks.
 
 The hostname of a system is critical for the correct operation of Kerberos and SSL. Both of these security mechanisms rely on the hostname to ensure that communication is occurring
-between the specified hosts. Renaming a host in a FreeIPA domain involves deleting the entry in FreeIPA, uninstalling the client software, changing the hostname, and re-enrolling 
-using the new name. Additionally, part of renaming hosts requires regenerating service principals. 
+between the specified hosts. Renaming a host in a FreeIPA domain involves deleting the entry in FreeIPA, uninstalling the client software, changing the hostname, and re-enrolling
+using the new name. Additionally, part of renaming hosts requires regenerating service principals.
 
 To reconfigure the client:
 
@@ -311,11 +311,11 @@ To reconfigure the client:
 .. code-block:: bash
 
   $ ipa service-find server.example.com
-   
-Each host has a default service which does not appear in the list of services. This service can be referred to 
+
+Each host has a default service which does not appear in the list of services. This service can be referred to
 as the "host service". The service principal for the host service is host/<hostname>, such as host/server.example.com.
 This principal can also be referred to as the host principal.
-  
+
 2) Identify all host groups to which the machine belongs.
 
 .. code-block:: bash
@@ -328,8 +328,8 @@ This principal can also be referred to as the host principal.
 
   $ ldapsearch -x -b "cn=accounts,dc=example,dc=com" "(&(objectclass=ipaservice)(userCertificate=*))" krbPrincipalName
 
-For any service principals (in addition to the host principal), determine the location of the corresponding keytabs 
-on server.example.com. The keytab location is different for each service, and FreeIPA does not store this information. 
+For any service principals (in addition to the host principal), determine the location of the corresponding keytabs
+on server.example.com. The keytab location is different for each service, and FreeIPA does not store this information.
 Each service on the client system has a Kerberos principal in the form service name/hostname@REALM, such as ldap/server.example.com@EXAMPLE.COM.
 
 4) Unenroll the client machine from the FreeIPA domain:
@@ -375,7 +375,7 @@ At this point, the host is completely removed from FreeIPA.
   $ ipa service-add serviceName/new-hostname
 
   To generate certificates for services, use either certmonger or the FreeIPA administration tools.
-  Re-add the host to any applicable host groups. 
+  Re-add the host to any applicable host groups.
 
 *Official Fedora Documentation Procedure for renaming a host. Information gathered from:
 https://docs.fedoraproject.org/en-US/Fedora/18/html/FreeIPA_Guide/renaming-machines.html
@@ -389,7 +389,7 @@ IMPORTANT: If the node is running puppet, you must stop puppet service in the ho
 
 There is no way to change the hostname for an IdM server or replica machine. The Kerberos keys amd certificate management is too complex to allow the hostname to change.
 
-Rather, if a server or replica needs to be renamed, it is easier to replace the instance. 
+Rather, if a server or replica needs to be renamed, it is easier to replace the instance.
 
 1) Create a new replica, with a CA, with the new hostname or IP address. This is described in https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/Setting_up_IPA_Replicas
 
@@ -398,7 +398,7 @@ Rather, if a server or replica needs to be renamed, it is easier to replace the 
 .. code-block:: bash
 
   $ ipactl stop
- 
+
 3) Verify that all other servers/replicas and clients are working as before.
 
 4) Uninstall the IdM server:
@@ -514,6 +514,22 @@ Camera / CCS
 62000    ccs
 62001    ccsadm
 ======== ============
+
+Troubleshooting
+==================
+
+"Failed to read keytab [default]: No such file or directory"
+------------------------------------------------------------
+Given that servers are configured by Puppet, sssd service may fail to start due to a previous installation of the server in the IPA system.
+
+To solve uninstall the server from IPA, delete it from IPA reboot it, and let Puppet to re-configure it.
+
+.. code-block:: bash
+
+   >ipa-client-install --uninstall
+
+   #type yes to reboot the server
+
 
 .. .. rubric:: References
 
