@@ -441,33 +441,6 @@ A fully expanded RBAC role looks roughly like the following:
             - Target DN: ``cn=vpn-cl,cn=groups,cn=accounts,dc=lsst,dc=cloud``
             - Target group: ``vpn-cl``
 
-Service accounts and bind DNs
-=============================
-
-Some services need to bind to the LDAP directory, and can't use a normal IPA
-user. Examples of this are applications like Foreman and Dex (and OIDC provider).
-
-.. code-block:: bash
-
-   #!/bin/bash
-   USER=foreman
-   PASSWORD="$(tr -cd '[:alnum:]' < /dev/urandom | head -c 16 | awk '{print toupper($0)}')"
-   cat <<EOF > binddn.update
-   dn: uid=foreman,cn=sysaccounts,cn=etc,dc=lsst,dc=cloud
-   add:objectclass:account
-   add:objectclass:simplesecurityobject
-   add:uid:foreman
-   add:userPassword:$PASSWORD
-   add:passwordExpirationTime:20380119031407Z
-   add:nsIdleTimeout:0
-   EOF
-
-   # This must be run on an IPA server
-   sudo ipa-ldap-updater binddn.update
-
-See also:
-
-- `Creating a bind DN for Foreman <https://www.freeipa.org/page/Creating_a_binddn_for_Foreman>`__
 
 UID/GID Allocation
 ==================
@@ -516,6 +489,78 @@ Camera / CCS
 62002    rce
 62003    dsid
 ======== ============
+
+User Account Types
+==================
+
+"Regular" User Accounts
+-----------------------
+
+A "regular" or "standard" user account is tied to one, and only one, person.
+Login credentials for a regular account are considered private to that person
+and *must not* be shared with another person, including IT staff. Shell access
+to hosts may be authenticated using either ssh private keys stored within IPA
+or using a krb5 token.  Passphrase auth *shall not* be allowed for hosts.
+Passphrases are allowed for access to resources via HTTPS and client VPN
+connections.
+
+SSH public keys *shall* be managed centrally via IPA.  The default
+``~/.ssh/authorized_keys`` files *shall* be disabled.
+
+"Role" User Accounts
+--------------------
+
+A user account is considered a "role" account if it is used by a service or
+perform tasks which are not tied to a specific person. E.g. an account used for
+controlling an instrument.  Unlike for "regular" user accounts, shell access to
+hosts by ssh private keys *shall not* be allowed. Passphrase auth for
+shell access *shall not* be allowed.
+
+Host "role" accounts *shall* be assumed by the use of ``sudo`` from a "regular"
+user account.  ``sudo`` rules *shall* be created as necessary to allow "role"
+accounts to be assumed without the use of a passphrase.  There *shall*
+be an audit trail of which person(s) have accessed which role accounts.
+
+SSH access directly between "role" accounts is to be avoided if possible. When
+it is necessary, the only allowed form of authentication is via krb5 tokens.
+krb5 credentials *shall not* be provided to biological persons.  Instead, krb5
+tokens *shall* be configured on hosts for specific "role" accounts via
+automation.
+
+Currently, SSH access between "role" accounts on different hosts requires that:
+
+- The host is attached to IPA.
+- The host is managed by puppet.
+- The sub-system owner(s) / responsible parties for both hosts agree to remote
+  "role" account access.
+
+"Service" User Accounts
+-----------------------
+
+Some services need to bind to the LDAP directory, and can't use a normal IPA
+user. Examples of this are applications like Foreman and Dex (and OIDC provider).
+
+.. code-block:: bash
+
+   #!/bin/bash
+   USER=foreman
+   PASSWORD="$(tr -cd '[:alnum:]' < /dev/urandom | head -c 16 | awk '{print toupper($0)}')"
+   cat <<EOF > binddn.update
+   dn: uid=foreman,cn=sysaccounts,cn=etc,dc=lsst,dc=cloud
+   add:objectclass:account
+   add:objectclass:simplesecurityobject
+   add:uid:foreman
+   add:userPassword:$PASSWORD
+   add:passwordExpirationTime:20380119031407Z
+   add:nsIdleTimeout:0
+   EOF
+
+   # This must be run on an IPA server
+   sudo ipa-ldap-updater binddn.update
+
+See also:
+
+- `Creating a bind DN for Foreman <https://www.freeipa.org/page/Creating_a_binddn_for_Foreman>`__
 
 .. .. rubric:: References
 
