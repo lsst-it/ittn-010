@@ -562,6 +562,16 @@ See also:
 
 - `Creating a bind DN for Foreman <https://www.freeipa.org/page/Creating_a_binddn_for_Foreman>`__
 
+Offboarding
+===========
+
+When a user is "offboarded" due to leaving the organization, the IPA user
+account SHALL be ``disabled`` within IPA but not ``deleted``.  This is
+necessary to preserve a record of the UID/GID of the user account and to
+prevent reuse of the UID/GID in the future.  The user account SHALL have
+**all** user group memberships deleted. This is to simplify and reduce the
+overhead involved with auditing user group membership.
+
 .. .. rubric:: References
 
 .. Make in-text citations with: :cite:`bibkey`.
