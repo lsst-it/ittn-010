@@ -383,7 +383,7 @@ At this point, the host is completely removed from FreeIPA.
   Re-add the host to any applicable host groups. 
 
 *Official Fedora Documentation Procedure for renaming a host. Information gathered from:
-https://docs.fedoraproject.org/en-US/Fedora/18/html/FreeIPA_Guide/renaming-machines.html
+https://docs.fedoraproject.org/en-US/Fedora/18/html/FreeIPA_Guide/renaming-machines.html*
 
 
 
@@ -413,7 +413,7 @@ Rather, if a server or replica needs to be renamed, it is easier to replace the 
   $ ipa-server-install --uninstall
 
 *Official Fedora Documentation Procedure for renaming an IdM server. Information gathered from:
-https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/renaming-replica
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/renaming-replica*
 
 
 IPA Directory RBAC
