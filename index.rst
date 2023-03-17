@@ -6,29 +6,29 @@
 
 **ITTN Category: Informational**
 
+Terminology
+===========
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in `BCP 14 <https://www.rfc-editor.org/info/bcp14>`_ [`RFC2119 <https://datatracker.ietf.org/doc/html/rfc2119>`_] [`RFC8174 <https://datatracker.ietf.org/doc/html/rfc8174>`_] when, and only when, they appear in all capitals, as shown here.
+
 IPA Server Topology
 ===================
 
-FreeIPA servers are multi-master; meaning that changes to the directory can be
-made at any given server and will be distributed to all other masters. Because
-all IPA servers are masters and fully replicated, LDAP queries and changes can
-be made at Cerro Pachon when the link to La Serena has been severed.
+FreeIPA servers are multi-master; meaning that changes to the directory can be made at any given server and will be distributed to all other masters.
+Because all IPA servers are masters and fully replicated, LDAP queries and changes can be made at Cerro Pachon when the link to La Serena has been severed.
 
-Two IPA servers (``ipa1.<site>.<domain>`` and ``ipa2.<site>.<domain>``) are
-deployed at each site, providing quick LDAP lookups and redundancy.
+Two IPA servers (``ipa1.<site>.<domain>`` and ``ipa2.<site>.<domain>``) are deployed at each site, providing quick LDAP lookups and redundancy.
 
 Group membership and access grants
 ==================================
 
-Host access and sudo permissions are applied to groups of hosts (hostgroups),
-and groups of users (user groups/unix groups). Access is always provided by
-assigning users to user groups, and hosts to host-groups.
+Host access and sudo permissions are applied to groups of hosts (hostgroups), and groups of users (user groups/unix groups).
+Access is always provided by assigning users to user groups, and hosts to host-groups.
 
 Group membership
 ----------------
 
-Access control can be delegated to users by granting them permissions to manage
-memberships for groups.
+Access control can be delegated to users by granting them permissions to manage memberships for groups.
 
 Example: adding a user to a group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -50,9 +50,8 @@ Example: adding a user to a group
 Hostgroup membership
 --------------------
 
-Hosts must always be added to a hostgroup via an automember rule. Hostgroups
-that have an automember rule will evict any hosts from the group that don't
-match the regex, so automember rules are all or nothing.
+Hosts must always be added to a hostgroup via an automember rule.
+Hostgroups that have an automember rule will evict any hosts from the group that don't match the regex, so automember rules are all or nothing.
 
 Example: creating a new automember rule and adding hosts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -111,29 +110,24 @@ Example: adding a host to an existing automember rule
 HBAC and sudo
 -------------
 
-Two levels of access are provided: basic login access to the host (which is
-generally done through SSH) and full sudo permissions.
+Two levels of access are provided: basic login access to the host (which is generally done through SSH) and full sudo permissions.
 
 - Unix user group for host access (HBAC): ``<cluster>``
 - Unix user group for sudo access: ``<cluster>-sudo``
 - IPA host group: ``<cluster>``
 
-Two access rules are used: an HBAC rule that grants access to the host, and a
-sudo rule that grants full sudo access.
+Two access rules are used: an HBAC rule that grants access to the host, and a sudo rule that grants full sudo access.
 
 - HBAC rule: ``<cluster>-users``
 - Sudo rule: ``<cluster>-sudo``
 
 .. note::
 
-   Our current convention is that user groups and hostgroups are always
-   singular. Sudo rules are always ``<cluster>-sudo`` and HBAC rules are always
-   ``<cluster>-users``.
+   Our current convention is that user groups and hostgroups are always singular. Sudo rules are always ``<cluster>-sudo`` and HBAC rules are always ``<cluster>-users``.
 
-   This convention is not necessarily ideal and is subject to revision, but
-   right now this is the pattern that we're following. We benefit from having a
-   consistent pattern that avoids transcription and consistency errors. In the
-   future we can (and probably should) revise this in the future.
+   This convention is not necessarily ideal and is subject to revision, but right now this is the pattern that we're following.
+   We benefit from having a consistent pattern that avoids transcription and consistency errors.
+   In the future we can (and probably should) revise this in the future.
 
 Example: amor cluster
 ---------------------
@@ -300,9 +294,10 @@ Renaming a already enrolled host
 
 IMPORTANT: If the node is running puppet, you must stop puppet service in the host before this procedure, otherwise, puppet might attempt to reenroll it before you finish all tasks.
 
-The hostname of a system is critical for the correct operation of Kerberos and SSL. Both of these security mechanisms rely on the hostname to ensure that communication is occurring
-between the specified hosts. Renaming a host in a FreeIPA domain involves deleting the entry in FreeIPA, uninstalling the client software, changing the hostname, and re-enrolling 
-using the new name. Additionally, part of renaming hosts requires regenerating service principals. 
+The hostname of a system is critical for the correct operation of Kerberos and SSL.
+Both of these security mechanisms rely on the hostname to ensure that communication is occurring between the specified hosts.
+Renaming a host in a FreeIPA domain involves deleting the entry in FreeIPA, uninstalling the client software, changing the hostname, and re-enrolling using the new name.
+Additionally, part of renaming hosts requires regenerating service principals.
 
 To reconfigure the client:
 
@@ -311,11 +306,12 @@ To reconfigure the client:
 .. code-block:: bash
 
   $ ipa service-find server.example.com
-   
-Each host has a default service which does not appear in the list of services. This service can be referred to 
-as the "host service". The service principal for the host service is host/<hostname>, such as host/server.example.com.
+
+Each host has a default service which does not appear in the list of services.
+This service can be referred to as the "host service".
+The service principal for the host service is host/<hostname>, such as host/server.example.com.
 This principal can also be referred to as the host principal.
-  
+
 2) Identify all host groups to which the machine belongs.
 
 .. code-block:: bash
@@ -328,8 +324,8 @@ This principal can also be referred to as the host principal.
 
   $ ldapsearch -x -b "cn=accounts,dc=example,dc=com" "(&(objectclass=ipaservice)(userCertificate=*))" krbPrincipalName
 
-For any service principals (in addition to the host principal), determine the location of the corresponding keytabs 
-on server.example.com. The keytab location is different for each service, and FreeIPA does not store this information. 
+For any service principals (in addition to the host principal), determine the location of the corresponding keytabs on server.example.com.
+The keytab location is different for each service, and FreeIPA does not store this information.
 Each service on the client system has a Kerberos principal in the form service name/hostname@REALM, such as ldap/server.example.com@EXAMPLE.COM.
 
 4) Unenroll the client machine from the FreeIPA domain:
@@ -358,8 +354,8 @@ At this point, the host is completely removed from FreeIPA.
 
   $ hostnamectl set-hostname new-hostname.example.com
 
-  If the system is already managed by puppet, you can perform a puppet run at this point and IPA will be auto-configured.
-  If the system isn't managed by puppet, proceed to number 8 (otherwise the operation has concluded).
+If the system is already managed by puppet, you can perform a puppet run at this point and IPA will be auto-configured.
+If the system isn't managed by puppet, proceed to number 8 (otherwise the operation has concluded).
 
 8) Re-enroll the system with FreeIPA:
 
@@ -367,18 +363,18 @@ At this point, the host is completely removed from FreeIPA.
 
   $ ipa-client-install
 
-  This generates a host principal for with the new hostname in /etc/krb5.keytab.
-  For every service that needs a new keytab, run the following command:
+This generates a host principal for with the new hostname in /etc/krb5.keytab.
+For every service that needs a new keytab, run the following command:
 
 .. code-block:: bash
 
   $ ipa service-add serviceName/new-hostname
 
-  To generate certificates for services, use either certmonger or the FreeIPA administration tools.
-  Re-add the host to any applicable host groups. 
+To generate certificates for services, use either certmonger or the FreeIPA administration tools.
+Re-add the host to any applicable host groups.
 
-*Official Fedora Documentation Procedure for renaming a host. Information gathered from:
-https://docs.fedoraproject.org/en-US/Fedora/18/html/FreeIPA_Guide/renaming-machines.html
+*Official Fedora Documentation Procedure for renaming a host.
+Information gathered from: https://docs.fedoraproject.org/en-US/Fedora/18/html/FreeIPA_Guide/renaming-machines.html*
 
 
 
@@ -387,9 +383,10 @@ Renaming an IdM Server or Replica
 
 IMPORTANT: If the node is running puppet, you must stop puppet service in the host before this procedure, otherwise, puppet might attempt to reenroll it before you finish all tasks.
 
-There is no way to change the hostname for an IdM server or replica machine. The Kerberos keys amd certificate management is too complex to allow the hostname to change.
+There is no way to change the hostname for an IdM server or replica machine.
+The Kerberos keys amd certificate management is too complex to allow the hostname to change.
 
-Rather, if a server or replica needs to be renamed, it is easier to replace the instance. 
+Rather, if a server or replica needs to be renamed, it is easier to replace the instance.
 
 1) Create a new replica, with a CA, with the new hostname or IP address. This is described in https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/Setting_up_IPA_Replicas
 
@@ -398,7 +395,7 @@ Rather, if a server or replica needs to be renamed, it is easier to replace the 
 .. code-block:: bash
 
   $ ipactl stop
- 
+
 3) Verify that all other servers/replicas and clients are working as before.
 
 4) Uninstall the IdM server:
@@ -407,16 +404,14 @@ Rather, if a server or replica needs to be renamed, it is easier to replace the 
 
   $ ipa-server-install --uninstall
 
-*Official Fedora Documentation Procedure for renaming an IdM server. Information gathered from:
-https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/renaming-replica
+*Official Fedora Documentation Procedure for renaming an IdM server.
+Information gathered from: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/renaming-replica*
 
 
 IPA Directory RBAC
 ==================
 
-IPA Directory RBAC  differs from host access control because while host access
-control provides access to hosts and sudo, IPA RBAC grants permissions to
-modify the directory itself.
+IPA Directory RBAC differs from host access control because while host access control provides access to hosts and sudo, IPA RBAC grants permissions to modify the directory itself.
 
 Roles bundle together groups of users, and groups of privileges.
 
@@ -445,14 +440,10 @@ A fully expanded RBAC role looks roughly like the following:
 UID/GID Allocation
 ==================
 
-On EL7 systems, the default ``/etc/login.defs`` has ``UID_MAX`` and ``GID_MAX``
-set to ``60000``. We prefer to avoiding having to manage IDs which potentially
-conflict between IPA/LDAP and system local accounts, as well as not interfering
-with the UID/GID sequence of locally created accounts.  While we could change
-the default values for these parameters, there would still be some risk of
-collision on hosts which are provisioned by a 3rd party prior to installation
-on our network(s).  Therefore we have adopted the policy that all centrally
-allocated UID/GIDs must be ``>= 60001``.
+On EL7 systems, the default ``/etc/login.defs`` has ``UID_MAX`` and ``GID_MAX`` set to ``60000``.
+We prefer to avoiding having to manage IDs which potentially conflict between IPA/LDAP and system local accounts, as well as not interfering with the UID/GID sequence of locally created accounts.
+While we could change the default values for these parameters, there would still be some risk of collision on hosts which are provisioned by a 3rd party prior to installation on our network(s).
+Therefore we have adopted the policy that all centrally allocated UID/GIDs must be ``>= 60001``.
 
 ID Ranges
 ---------
@@ -466,12 +457,11 @@ These UID/GID ranges are reserved for specific use cases:
 Resevered UIDs/GIDs
 -------------------
 
-This document shall be considered the canonical source for specific user/group
-reservations. UID/GID reservations should use the same ID to avoid confusion.
+This document shall be considered the canonical source for specific user/group reservations.
+UID/GID reservations should use the same ID to avoid confusion.
 E.g. A user/group named ``foo`` which use ``123456`` as both the UID and GID.
 
-If **only** a UID or GID is need, the corresponding UID or GID should still be
-"reserved" to avoid future confusion.
+If **only** a UID or GID is need, the corresponding UID or GID should still be "reserved" to avoid future confusion.
 
 ======== ============
 UID/GID  username
@@ -497,35 +487,30 @@ User Account Types
 -----------------------
 
 A "regular" or "standard" user account is tied to one, and only one, person.
-Login credentials for a regular account are considered private to that person
-and *must not* be shared with another person, including IT staff. Shell access
-to hosts may be authenticated using either ssh private keys stored within IPA
-or using a krb5 token.  Passphrase auth *shall not* be allowed for hosts.
-Passphrases are allowed for access to resources via HTTPS and client VPN
-connections.
+Login credentials for a regular account are considered private to that person and *must not* be shared with another person, including IT staff.
+Shell access to hosts may be authenticated using either ssh private keys stored within IPA or using a krb5 token.
+Passphrase auth *shall not* be allowed for hosts.
+Passphrases are allowed for access to resources via HTTPS and client VPN connections.
 
-SSH public keys *shall* be managed centrally via IPA.  The default
-``~/.ssh/authorized_keys`` files *shall* be disabled.
+SSH public keys *shall* be managed centrally via IPA.
+The default ``~/.ssh/authorized_keys`` files *shall* be disabled.
 
 "Role" User Accounts
 --------------------
 
-A user account is considered a "role" account if it is used by a service or
-perform tasks which are not tied to a specific person. E.g. an account used for
-controlling an instrument.  Unlike for "regular" user accounts, shell access to
-hosts by ssh private keys *shall not* be allowed. Passphrase auth for
-shell access *shall not* be allowed.
+A user account is considered a "role" account if it is used by a service or perform tasks which are not tied to a specific person.
+E.g. an account used for controlling an instrument.
+Unlike for "regular" user accounts, shell access to hosts by ssh private keys *shall not* be allowed.
+Passphrase auth for shell access *shall not* be allowed.
 
-Host "role" accounts *shall* be assumed by the use of ``sudo`` from a "regular"
-user account.  ``sudo`` rules *shall* be created as necessary to allow "role"
-accounts to be assumed without the use of a passphrase.  There *shall*
-be an audit trail of which person(s) have accessed which role accounts.
+Host "role" accounts *shall* be assumed by the use of ``sudo`` from a "regular" user account.
+``sudo`` rules *shall* be created as necessary to allow "role" accounts to be assumed without the use of a passphrase.
+There *shall* be an audit trail of which person(s) have accessed which role accounts.
 
-SSH access directly between "role" accounts is to be avoided if possible. When
-it is necessary, the only allowed form of authentication is via krb5 tokens.
-krb5 credentials *shall not* be provided to biological persons.  Instead, krb5
-tokens *shall* be configured on hosts for specific "role" accounts via
-automation.
+SSH access directly between "role" accounts is to be avoided if possible.
+When it is necessary, the only allowed form of authentication is via krb5 tokens.
+krb5 credentials *shall not* be provided to biological persons.
+Instead, krb5 tokens *shall* be configured on hosts for specific "role" accounts via automation.
 
 Currently, SSH access between "role" accounts on different hosts requires that:
 
@@ -537,8 +522,8 @@ Currently, SSH access between "role" accounts on different hosts requires that:
 "Service" User Accounts
 -----------------------
 
-Some services need to bind to the LDAP directory, and can't use a normal IPA
-user. Examples of this are applications like Foreman and Dex (and OIDC provider).
+Some services need to bind to the LDAP directory, and can't use a normal IPA user.
+Examples of this are applications like Foreman and Dex (and OIDC provider).
 
 .. code-block:: bash
 
@@ -565,12 +550,10 @@ See also:
 Offboarding
 ===========
 
-When a user is "offboarded" due to leaving the organization, the IPA user
-account SHALL be ``disabled`` within IPA but not ``deleted``.  This is
-necessary to preserve a record of the UID/GID of the user account and to
-prevent reuse of the UID/GID in the future.  The user account SHALL have
-**all** user group memberships deleted. This is to simplify and reduce the
-overhead involved with auditing user group membership.
+When a user is "offboarded" due to leaving the organization, the IPA user account SHALL be ``disabled`` within IPA but not ``deleted``.
+This is necessary to preserve a record of the UID/GID of the user account and to prevent reuse of the UID/GID in the future.
+The user account SHALL have **all** user group memberships deleted.
+This is to simplify and reduce the overhead involved with auditing user group membership.
 
 .. .. rubric:: References
 
