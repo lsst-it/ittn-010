@@ -437,6 +437,22 @@ A fully expanded RBAC role looks roughly like the following:
             - Target group: ``vpn-cl``
 
 
+Role User Account Creation
+==========================
+
+Role user accounts are generally accessed by sudo-ing from a regular user account.
+As a convenience, authorized personnel are allowed to sudo to a role account without inputting a passphrase.
+
+The procedure is:
+
+1) Create the `<role user>` user account.
+2) Add the `<role user>` user account to the user group(s) associated with HBAC rules that allow access to the host(s) upon which the role user will be used.
+   This is typically a user group named `<host group>`.
+3) Create a user group named `<host group>-sudoto-<role user>`.
+4) Create a sudo rule named `<host group>-sudoto-<role user>` that allows sudo without passphrase as `<role user>`.
+5) Add user account(s) to the `<host group>-sudoto-<role user>` user group.
+
+
 UID/GID Allocation
 ==================
 
