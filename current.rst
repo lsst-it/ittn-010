@@ -1,6 +1,8 @@
 HBAC Rules
 ==========
 
+The following are the HBAC rules currently active
+
 HbacRule amor-users
 
 - UserGroup configured: ['amor']
