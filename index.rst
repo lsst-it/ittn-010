@@ -515,6 +515,8 @@ Camera / CCS
 62001    ccsadm
 ======== ============
 
+.. include:: current.rst 
+
 Troubleshooting
 ==================
 
