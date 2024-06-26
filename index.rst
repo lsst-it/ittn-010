@@ -488,6 +488,7 @@ DM / "archive"
 61001    (reserved/unused for archiver)
 61002    atadbot
 61003    iip
+61616    rke2
 Camera / CCS
 ---------------------
 62000    ccs
